@@ -23,6 +23,8 @@
   .currency-display{display:flex;align-items:center;gap:0.5rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:0.5rem 1.25rem;font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:600;}
   .currency-icon{color:var(--accent);}
   .cps-badge{font-size:0.7rem;color:var(--accent-soft);font-family:'Rajdhani',sans-serif;letter-spacing:0.1em;background:rgba(248,215,170,0.1);border:1px solid rgba(248,215,170,0.28);border-radius:50px;padding:0.3rem 0.75rem;}
+  .reset-btn{font-family:'Rajdhani',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:0.45rem 0.85rem;border-radius:999px;border:1px solid rgba(251,105,108,0.5);background:rgba(251,105,108,0.1);color:var(--accent-soft);cursor:pointer;transition:all 0.2s ease;}
+  .reset-btn:hover{background:rgba(251,105,108,0.2);border-color:rgba(251,105,108,0.75);}
 
   .tabs{position:relative;z-index:5;display:flex;border-bottom:1px solid var(--border);background:rgba(45,45,44,0.72);}
   .tab{font-family:'Rajdhani',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;padding:1rem 2rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;}
@@ -213,6 +215,7 @@
   </div>
   <div class="header-right">
     <div class="cps-badge" id="cpsBadge" style="display:none">◈ 0 /sec</div>
+    <button class="reset-btn" onclick="resetGame()">Reset</button>
   </div>
 </header>
 
@@ -307,6 +310,7 @@
 <script>
 // ===== SHARED =====
 let coins = 0;
+let shouldPersist = true;
 function setCoins(v){
   coins = Math.max(0, Math.floor(v));
   document.getElementById('coins').textContent = coins.toLocaleString();
@@ -378,6 +382,7 @@ function applyUpgradeLevels(levels){
 }
 
 function saveGame(){
+  if(!shouldPersist)return;
   const payload={
     coins,
     totalMined,
@@ -393,6 +398,14 @@ function saveGame(){
     passiveAccum,
   };
   localStorage.setItem(SAVE_KEY,JSON.stringify(payload));
+}
+
+function resetGame(){
+  const confirmed=window.confirm('Reset all progress? This will clear your coins, upgrades, and inventory.');
+  if(!confirmed)return;
+  shouldPersist=false;
+  localStorage.removeItem(SAVE_KEY);
+  window.location.reload();
 }
 
 function loadGame(){
