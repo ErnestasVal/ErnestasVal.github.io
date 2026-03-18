@@ -7,25 +7,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --common:#7a8fa6;--rare:#3b82f6;--epic:#a855f7;--legendary:#f59e0b;--mythic:#ef4444;
-    --bg:#080c14;--surface:#0d1420;--surface2:#111827;--border:rgba(255,255,255,0.07);--text:#e2e8f0;--muted:#64748b;
+    --common:#f8d7aa;--rare:#f3b999;--epic:#f69385;--legendary:#fb696c;--mythic:#ff4f57;
+    --bg:#2d2d2c;--surface:#242423;--surface2:#333331;--border:rgba(248,215,170,0.18);--text:#f8d7aa;--muted:#d4b58b;
+    --accent:#fb696c;--accent-soft:#f8d7aa;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
-  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(59,130,246,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
-  body::after{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(168,85,247,0.08) 0%,transparent 70%);pointer-events:none;z-index:0;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(251,105,108,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(251,105,108,0.05) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(248,215,170,0.12) 0%,transparent 70%);pointer-events:none;z-index:0;}
 
-  header{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2rem;border-bottom:1px solid var(--border);background:rgba(8,12,20,0.9);backdrop-filter:blur(20px);}
-  .logo{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;letter-spacing:0.3em;background:linear-gradient(135deg,#e2e8f0 30%,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-  .header-right{display:flex;align-items:center;gap:1rem;}
+  header{position:relative;z-index:10;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:1.25rem 2rem;border-bottom:1px solid var(--border);background:rgba(45,45,44,0.92);backdrop-filter:blur(20px);gap:1rem;}
+  .logo{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;letter-spacing:0.3em;background:linear-gradient(135deg,#f8d7aa 30%,#fb696c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .logo{justify-self:start;}
+  .header-right{display:flex;align-items:center;gap:1rem;justify-self:end;}
   .currency-display{display:flex;align-items:center;gap:0.5rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:0.5rem 1.25rem;font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:600;}
-  .currency-icon{color:#f59e0b;}
-  .cps-badge{font-size:0.7rem;color:#4ade80;font-family:'Rajdhani',sans-serif;letter-spacing:0.1em;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:50px;padding:0.3rem 0.75rem;}
+  .currency-icon{color:var(--accent);}
+  .cps-badge{font-size:0.7rem;color:var(--accent-soft);font-family:'Rajdhani',sans-serif;letter-spacing:0.1em;background:rgba(248,215,170,0.1);border:1px solid rgba(248,215,170,0.28);border-radius:50px;padding:0.3rem 0.75rem;}
 
-  .tabs{position:relative;z-index:5;display:flex;border-bottom:1px solid var(--border);background:rgba(8,12,20,0.6);}
+  .tabs{position:relative;z-index:5;display:flex;border-bottom:1px solid var(--border);background:rgba(45,45,44,0.72);}
   .tab{font-family:'Rajdhani',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;padding:1rem 2rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;}
   .tab:hover{color:var(--text);}
-  .tab.active{color:var(--text);border-bottom-color:#a855f7;}
+  .tab.active{color:var(--text);border-bottom-color:var(--accent);}
 
   main{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:2.5rem 2rem;}
   .tab-content{display:none;}
@@ -37,23 +39,27 @@
   .box-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:3rem;}
   .box-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;cursor:pointer;transition:all 0.25s ease;overflow:hidden;}
   .box-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,0.15);}
-  .box-card.selected{border-color:rgba(168,85,247,0.6);background:rgba(168,85,247,0.05);transform:translateY(-3px);}
+  .box-card.selected{border-color:rgba(251,105,108,0.65);background:rgba(251,105,108,0.1);transform:translateY(-3px);}
+  .box-card.secret-card{grid-column:1/-1;}
+  .box-card.locked{opacity:0.55;cursor:not-allowed;filter:saturate(0.5);}
+  .box-card.locked:hover{transform:none;border-color:var(--border);}
   .box-icon{font-size:2.5rem;margin-bottom:0.75rem;display:block;}
   .box-name{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.25rem;}
-  .box-price{font-size:0.8rem;color:#f59e0b;font-weight:500;}
+  .box-price{font-size:0.8rem;color:var(--accent);font-weight:500;}
+  .box-opened{font-size:0.72rem;color:var(--muted);margin-top:0.25rem;letter-spacing:0.05em;}
   .box-tier-badge{position:absolute;top:0.75rem;right:0.75rem;font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.5rem;border-radius:4px;}
 
   /* VAULT LAYOUT */
   .opening-area{display:grid;grid-template-columns:1fr 380px;gap:2rem;align-items:start;}
   .chest-stage{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:3rem 2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:420px;position:relative;overflow:hidden;}
-  .chest-stage::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:300px;height:100px;background:radial-gradient(ellipse,rgba(168,85,247,0.12) 0%,transparent 70%);}
+  .chest-stage::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:300px;height:100px;background:radial-gradient(ellipse,rgba(251,105,108,0.18) 0%,transparent 70%);}
   .chest-visual{font-size:7rem;cursor:pointer;transition:transform 0.15s ease;position:relative;z-index:1;user-select:none;}
   .chest-visual:hover{transform:scale(1.06);}
   .chest-visual:active{transform:scale(0.96);}
   .chest-visual.opening{animation:chestPulse 0.6s ease forwards;}
   @keyframes chestPulse{0%{transform:scale(1);}30%{transform:scale(1.15) rotate(-5deg);}60%{transform:scale(0.9) rotate(3deg);}100%{transform:scale(1);}}
-  .open-btn{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:8px;padding:0.9rem 2.5rem;cursor:pointer;margin-top:1.5rem;transition:all 0.2s ease;position:relative;z-index:1;}
-  .open-btn:hover{background:linear-gradient(135deg,#8b5cf6,#c084fc);transform:translateY(-1px);box-shadow:0 8px 25px rgba(139,92,246,0.35);}
+  .open-btn{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;background:linear-gradient(135deg,#fb696c,#f8d7aa);color:#233f4a;border:none;border-radius:8px;padding:0.9rem 2.5rem;cursor:pointer;margin-top:1.5rem;transition:all 0.2s ease;position:relative;z-index:1;}
+  .open-btn:hover{background:linear-gradient(135deg,#ff7f82,#fbe2c2);transform:translateY(-1px);box-shadow:0 8px 25px rgba(251,105,108,0.35);}
   .open-btn:active{transform:translateY(0);}
   .open-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none;}
   .open-btn-cost{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.6rem;}
@@ -68,8 +74,10 @@
   .inv-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
   .inv-item{background:var(--surface2);border-radius:8px;padding:0.5rem;text-align:center;border:1px solid var(--border);transition:all 0.2s ease;overflow:hidden;}
   .inv-item:hover{transform:scale(1.05);}
+  .inv-item.sellable{cursor:pointer;}
   .inv-item .item-emoji{font-size:1.3rem;display:block;}
   .inv-item .item-label{font-size:0.55rem;margin-top:0.25rem;line-height:1.2;color:var(--muted);}
+  .inv-item .item-value{font-family:'Rajdhani',sans-serif;font-size:0.55rem;font-weight:700;color:var(--accent);margin-top:0.2rem;letter-spacing:0.06em;text-transform:uppercase;}
   .inv-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:0.5rem;color:var(--muted);font-size:0.8rem;text-align:center;grid-column:1/-1;}
   .inv-empty-icon{font-size:2rem;opacity:0.3;}
   @keyframes itemPop{0%{transform:scale(0);opacity:0;}70%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}
@@ -93,7 +101,7 @@
 
   /* RARITY */
   .r-common{color:var(--common);}.r-rare{color:var(--rare);}.r-epic{color:var(--epic);}.r-legendary{color:var(--legendary);}.r-mythic{color:var(--mythic);}
-  .rg-common{background:rgba(122,143,166,0.12);}.rg-rare{background:rgba(59,130,246,0.12);}.rg-epic{background:rgba(168,85,247,0.12);}.rg-legendary{background:rgba(245,158,11,0.12);}.rg-mythic{background:rgba(239,68,68,0.12);}
+  .rg-common{background:rgba(248,215,170,0.14);}.rg-rare{background:rgba(243,185,153,0.14);}.rg-epic{background:rgba(246,147,133,0.14);}.rg-legendary{background:rgba(251,105,108,0.14);}.rg-mythic{background:rgba(255,79,87,0.14);}
 
   /* ======= CLICKER ======= */
   .clicker-layout{display:grid;grid-template-columns:300px 1fr 300px;gap:1.5rem;align-items:start;}
@@ -112,9 +120,9 @@
   .click-stat-row{display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0;border-bottom:1px solid var(--border);}
   .click-stat-row:last-child{border-bottom:none;}
   .click-stat-label{font-size:0.72rem;color:var(--muted);font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;}
-  .click-stat-val{font-family:'Orbitron',monospace;font-size:0.9rem;font-weight:700;color:#f59e0b;}
+  .click-stat-val{font-family:'Orbitron',monospace;font-size:0.9rem;font-weight:700;color:var(--accent);}
 
-  .float-coin{position:fixed;pointer-events:none;z-index:500;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#f59e0b;animation:floatUp 0.9s ease-out forwards;}
+  .float-coin{position:fixed;pointer-events:none;z-index:500;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:var(--accent);animation:floatUp 0.9s ease-out forwards;}
   @keyframes floatUp{0%{transform:translateY(0) translateX(0);opacity:1;}100%{transform:translateY(-80px) translateX(var(--drift));opacity:0;}}
 
   /* UPGRADES */
@@ -133,7 +141,7 @@
   .upgrade-info{flex:1;min-width:0;}
   .upgrade-name{font-family:'Rajdhani',sans-serif;font-size:0.88rem;font-weight:700;letter-spacing:0.04em;}
   .upgrade-desc{font-size:0.7rem;color:var(--muted);margin-top:0.15rem;line-height:1.4;}
-  .upgrade-cost{font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:#f59e0b;text-align:right;}
+  .upgrade-cost{font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:var(--accent);text-align:right;}
   .upgrade-item.can-afford .upgrade-cost{color:#4ade80;}
   .upgrade-owned-badge{font-size:0.65rem;color:#4ade80;font-family:'Rajdhani',sans-serif;font-weight:700;text-align:right;}
 
@@ -154,7 +162,7 @@
   .gen-progress{height:100%;border-radius:2px;transition:width 0.05s linear;}
   .gen-footer{display:flex;justify-content:space-between;align-items:center;}
   .gen-cps-label{font-size:0.68rem;color:var(--muted);font-family:'Rajdhani',sans-serif;}
-  .gen-cost{font-family:'Rajdhani',sans-serif;font-size:0.8rem;font-weight:700;color:#f59e0b;}
+  .gen-cost{font-family:'Rajdhani',sans-serif;font-size:0.8rem;font-weight:700;color:var(--accent);}
   .gen-item.can-afford .gen-cost{color:#4ade80;}
 
   /* REVEAL */
@@ -169,7 +177,7 @@
   .reveal-rarity{font-family:'Rajdhani',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:0.5rem;}
   .reveal-name{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;margin-bottom:0.5rem;line-height:1.3;}
   .reveal-desc{font-size:0.85rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem;}
-  .reveal-value{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;color:#f59e0b;margin-bottom:1.5rem;}
+  .reveal-value{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;color:var(--accent);margin-bottom:1.5rem;}
   .claim-btn{font-family:'Rajdhani',sans-serif;font-size:0.9rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:0.75rem 2rem;cursor:pointer;transition:all 0.2s ease;width:100%;}
   .claim-btn:hover{background:rgba(255,255,255,0.08);}
 
@@ -186,23 +194,23 @@
 
 <header>
   <div class="logo">VAULT</div>
+  <div class="currency-display">
+    <span class="currency-icon">◈</span>
+    <span id="coins">0</span>
+  </div>
   <div class="header-right">
     <div class="cps-badge" id="cpsBadge" style="display:none">◈ 0 /sec</div>
-    <div class="currency-display">
-      <span class="currency-icon">◈</span>
-      <span id="coins">2500</span>
-    </div>
   </div>
 </header>
 
 <div class="tabs">
-  <button class="tab active" id="tab-btn-vault" onclick="switchTab('vault',this)">🔒 Vault</button>
-  <button class="tab" id="tab-btn-mine" onclick="switchTab('mine',this)">⛏️ Coin Mine</button>
+  <button class="tab active" id="tab-btn-mine" onclick="switchTab('mine',this)">⛏️ Coin Mine</button>
+  <button class="tab" id="tab-btn-vault" onclick="switchTab('vault',this)">🔒 Vault</button>
 </div>
 
 <main>
   <!-- VAULT -->
-  <div class="tab-content active" id="tab-vault">
+  <div class="tab-content" id="tab-vault">
     <p class="section-title">Choose a vault</p>
     <div class="box-grid" id="boxGrid"></div>
     <div class="opening-area">
@@ -225,6 +233,7 @@
           <div class="inv-title">Inventory</div>
           <div class="inv-count" id="invCount">0 items</div>
         </div>
+        <div class="inv-count" style="margin-bottom:0.6rem;">Click an item to sell it</div>
         <div class="inv-grid" id="invGrid">
           <div class="inv-empty" id="emptyMsg"><span class="inv-empty-icon">📦</span><span>Open a vault to begin</span></div>
         </div>
@@ -233,7 +242,7 @@
   </div>
 
   <!-- MINE -->
-  <div class="tab-content" id="tab-mine">
+  <div class="tab-content active" id="tab-mine">
     <div class="clicker-layout">
       <div class="click-zone">
         <div class="click-zone-title">Coin Mine</div>
@@ -278,11 +287,11 @@
 
 <script>
 // ===== SHARED =====
-let coins = 2500;
+let coins = 0;
 function setCoins(v){
   coins = Math.max(0, Math.floor(v));
   document.getElementById('coins').textContent = coins.toLocaleString();
-  updateBtn(); renderUpgrades(); renderGenerators();
+  updateBtn(); updateShopAffordability();
 }
 function addCoins(n){ setCoins(coins + n); }
 
@@ -295,42 +304,73 @@ function switchTab(id, el){
 
 // ===== VAULT =====
 const BOXES=[
-  {id:'bronze',name:'Bronze Vault',icon:'📦',cost:50,tier:'Starter',tierColor:'#cd7f32',color:'#cd7f32',odds:{common:65,rare:24,epic:8,legendary:2.5,mythic:0.5}},
-  {id:'silver',name:'Silver Vault',icon:'🗃️',cost:150,tier:'Standard',tierColor:'#94a3b8',color:'#94a3b8',odds:{common:50,rare:30,epic:14,legendary:5,mythic:1}},
-  {id:'golden',name:'Golden Vault',icon:'🏆',cost:400,tier:'Premium',tierColor:'#f59e0b',color:'#f59e0b',odds:{common:30,rare:30,epic:24,legendary:12,mythic:4}},
-  {id:'obsidian',name:'Obsidian Vault',icon:'💎',cost:1000,tier:'Elite',tierColor:'#a855f7',color:'#a855f7',odds:{common:10,rare:20,epic:30,legendary:28,mythic:12}}
+  {id:'bronze',name:'Bronze Vault',icon:'📦',cost:50,tier:'Starter',tierColor:'#f8d7aa',color:'#f8d7aa',odds:{common:65,rare:24,epic:8,legendary:2.5,mythic:0.5}},
+  {id:'silver',name:'Silver Vault',icon:'🗃️',cost:150,tier:'Standard',tierColor:'#f3b999',color:'#f3b999',odds:{common:50,rare:30,epic:14,legendary:5,mythic:1}},
+  {id:'golden',name:'Golden Vault',icon:'🏆',cost:400,tier:'Premium',tierColor:'#f69385',color:'#f69385',odds:{common:30,rare:30,epic:24,legendary:12,mythic:4}},
+  {id:'obsidian',name:'Obsidian Vault',icon:'💎',cost:1000,tier:'Elite',tierColor:'#fb696c',color:'#fb696c',odds:{common:10,rare:20,epic:30,legendary:28,mythic:12}},
+  {id:'secret',name:'??? Vault',icon:'🕳️',cost:250000,tier:'Classified',tierColor:'#fb696c',color:'#fb696c',odds:{common:0,rare:0,epic:0,legendary:0,mythic:100},isSecret:true}
 ];
 const ITEMS={
   common:[{name:'Iron Shield',icon:'🛡️',desc:'A basic shield made from iron ore.',value:30},{name:'Wooden Staff',icon:'🪄',desc:'A simple magical conduit.',value:25},{name:'Health Flask',icon:'🧪',desc:'Restores minor health points.',value:20},{name:'Scout Map',icon:'🗺️',desc:'Reveals nearby terrain.',value:35},{name:'Iron Coin',icon:'🪙',desc:'Standard currency.',value:10},{name:'Stone Rune',icon:'🪨',desc:'Faint traces of power.',value:15}],
   rare:[{name:'Crystal Dagger',icon:'🗡️',desc:'A blade that refracts light.',value:120},{name:'Storm Cape',icon:'🧥',desc:'Woven from thunderstorm fibers.',value:140},{name:'Frost Amulet',icon:'❄️',desc:'Slows enemies on contact.',value:160},{name:'Silver Arrow',icon:'🏹',desc:'Blessed by the moon goddess.',value:110},{name:'Echo Tome',icon:'📖',desc:'Spells cast twice.',value:130}],
   epic:[{name:'Void Gauntlets',icon:'🥊',desc:'Phase through solid matter.',value:380},{name:'Starfall Bow',icon:'🌠',desc:'Fires condensed starlight.',value:420},{name:'Shadow Mask',icon:'🎭',desc:'Bends light around the wearer.',value:400},{name:'Phoenix Feather',icon:'🪶',desc:'Resurrects owner once.',value:500},{name:'Time Hourglass',icon:'⏳',desc:'Rewind the last 3 seconds.',value:460}],
   legendary:[{name:'Dragon Blade',icon:'⚔️',desc:'Forged in the heart of an elder dragon.',value:1200},{name:'Crown of Eons',icon:'👑',desc:'Worn by seventeen ancient kings.',value:1500},{name:'Celestial Orb',icon:'🔮',desc:'Contains a fragment of a dying star.',value:1800},{name:'World Serpent Scale',icon:'🐍',desc:'Impenetrable. Warm to the touch.',value:2000}],
-  mythic:[{name:'Eternity Shard',icon:'💠',desc:"A splinter of the universe's first moment.",value:5000},{name:'Godslayer',icon:'🌀',desc:'A weapon that has ended divine lives.',value:6000},{name:'Void Heart',icon:'🖤',desc:'The literal heart of nothingness.',value:8000}]
+  mythic:[{name:'Eternity Shard',icon:'💠',desc:"A splinter of the universe's first moment.",value:5000},{name:'Godslayer',icon:'🌀',desc:'A weapon that has ended divine lives.',value:6000},{name:'Void Heart',icon:'🖤',desc:'The literal heart of nothingness.',value:8000}],
+  secret:[{name:'Core of Creation',icon:'🌌',desc:'The only known relic from before time itself.',value:500000}]
 };
 const RARITY_ORDER=['common','rare','epic','legendary','mythic'];
 const RARITY_LABELS={common:'Common',rare:'Rare',epic:'Epic',legendary:'Legendary',mythic:'Mythic'};
-const RARITY_COLORS={common:'#7a8fa6',rare:'#3b82f6',epic:'#a855f7',legendary:'#f59e0b',mythic:'#ef4444'};
+const RARITY_COLORS={common:'#f8d7aa',rare:'#f3b999',epic:'#f69385',legendary:'#fb696c',mythic:'#ff4f57'};
 const RARITY_CLASSES={common:'r-common',rare:'r-rare',epic:'r-epic',legendary:'r-legendary',mythic:'r-mythic'};
 
-let selectedBox=BOXES[0], inventory=[], isOpening=false;
+const BOX_PRICE_GROWTH=1.05;
+const REGULAR_BOX_IDS=BOXES.filter(b=>!b.isSecret).map(b=>b.id);
+let selectedBox=BOXES[0], inventory=[], isOpening=false, inventoryItemId=1;
+let boxOpenCounts=BOXES.reduce((acc,b)=>{acc[b.id]=0;return acc;},{});
+let secretUnlockedAnnounced=false;
 let vStats={opened:0,spent:0,legendaries:0,best:null};
 
+function getCurrentBoxCost(box){
+  return Math.floor(box.cost*Math.pow(BOX_PRICE_GROWTH,boxOpenCounts[box.id]||0));
+}
+function getSecretUnlockProgress(){
+  return REGULAR_BOX_IDS.reduce((sum,id)=>sum+Math.min(boxOpenCounts[id]||0,10),0);
+}
+function isBoxUnlocked(box){
+  if(!box.isSecret)return true;
+  return REGULAR_BOX_IDS.every(id=>(boxOpenCounts[id]||0)>=10);
+}
+
 function renderBoxGrid(){
-  document.getElementById('boxGrid').innerHTML=BOXES.map(b=>`
-    <div class="box-card" id="card-${b.id}" onclick="selectBox('${b.id}')">
+  document.getElementById('boxGrid').innerHTML=BOXES.map(b=>{
+    const unlocked=isBoxUnlocked(b);
+    const price=getCurrentBoxCost(b);
+    const opens=boxOpenCounts[b.id]||0;
+    const openedLabel=b.isSecret?`Opened: ${opens}`:`Opened: ${opens}`;
+    const secretProgress=b.isSecret?`<div class="box-price">Unlock: ${getSecretUnlockProgress()}/${REGULAR_BOX_IDS.length*10}</div>`:'';
+    return `<div class="box-card ${b.isSecret?'secret-card':''} ${unlocked?'':'locked'}" id="card-${b.id}" onclick="selectBox('${b.id}')">
       <span class="box-icon">${b.icon}</span>
       <div class="box-name" style="color:${b.color}">${b.name}</div>
-      <div class="box-price">◈ ${b.cost}</div>
+      <div class="box-price">${unlocked?`◈ ${price.toLocaleString()}`:'Locked'}</div>
+      <div class="box-opened">${openedLabel}</div>
+      ${secretProgress}
       <div class="box-tier-badge" style="background:${b.tierColor}22;color:${b.tierColor}">${b.tier}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 function selectBox(id){
-  selectedBox=BOXES.find(b=>b.id===id);
+  const nextBox=BOXES.find(b=>b.id===id);
+  if(!nextBox)return;
+  if(!isBoxUnlocked(nextBox)){
+    showToast('Secret vault locked: open each normal vault 10 times');
+    return;
+  }
+  selectedBox=nextBox;
   document.querySelectorAll('.box-card').forEach(c=>c.classList.remove('selected'));
   document.getElementById('card-'+id).classList.add('selected');
   document.getElementById('chestVisual').textContent=selectedBox.icon;
   document.getElementById('chestVisual').style.filter=`drop-shadow(0 0 20px ${selectedBox.color}55)`;
-  document.getElementById('btnCost').textContent=`◈ ${selectedBox.cost} per open`;
+  document.getElementById('btnCost').textContent=`◈ ${getCurrentBoxCost(selectedBox).toLocaleString()} per open`;
   renderOdds(); updateBtn();
 }
 function renderOdds(){
@@ -339,8 +379,14 @@ function renderOdds(){
 }
 function updateBtn(){
   const btn=document.getElementById('openBtn'); if(!btn)return;
-  btn.disabled=coins<selectedBox.cost||isOpening;
-  btn.textContent=coins<selectedBox.cost?'Insufficient Funds':'Open Vault';
+  if(!isBoxUnlocked(selectedBox)){
+    btn.disabled=true;
+    btn.textContent='Locked';
+    return;
+  }
+  const cost=getCurrentBoxCost(selectedBox);
+  btn.disabled=coins<cost||isOpening;
+  btn.textContent=coins<cost?'Insufficient Funds':'Open Vault';
 }
 function rollRarity(){
   const r=Math.random()*100; let c=0;
@@ -348,14 +394,25 @@ function rollRarity(){
   return 'common';
 }
 function openBox(){
-  if(isOpening||coins<selectedBox.cost)return;
+  if(isOpening||!isBoxUnlocked(selectedBox))return;
+  const currentCost=getCurrentBoxCost(selectedBox);
+  if(coins<currentCost)return;
   isOpening=true; updateBtn();
-  setCoins(coins-selectedBox.cost);
-  vStats.opened++; vStats.spent+=selectedBox.cost; updateVStats();
+  setCoins(coins-currentCost);
+  vStats.opened++; vStats.spent+=currentCost; updateVStats();
+  boxOpenCounts[selectedBox.id]=(boxOpenCounts[selectedBox.id]||0)+1;
+  const activeId=selectedBox.id;
+  renderBoxGrid();
+  selectBox(activeId);
+  if(isBoxUnlocked(BOXES.find(b=>b.isSecret))&&!secretUnlockedAnnounced){
+    secretUnlockedAnnounced=true;
+    showToast('Secret vault unlocked');
+  }
   const chest=document.getElementById('chestVisual');
   chest.classList.add('opening'); setTimeout(()=>chest.classList.remove('opening'),700);
   const rarity=rollRarity();
-  const item=ITEMS[rarity][Math.floor(Math.random()*ITEMS[rarity].length)];
+  const itemPool=selectedBox.isSecret?ITEMS.secret:ITEMS[rarity];
+  const item=itemPool[Math.floor(Math.random()*itemPool.length)];
   if(rarity==='legendary'||rarity==='mythic')vStats.legendaries++;
   if(!vStats.best||RARITY_ORDER.indexOf(rarity)>RARITY_ORDER.indexOf(vStats.best))vStats.best=rarity;
   updateVStats();
@@ -385,16 +442,44 @@ function overlayBgClick(e){
   if(e.target===document.getElementById('revealOverlay'))closeReveal();
 }
 function addToInventory(item,rarity){
-  inventory.unshift({...item,rarity});
+  const invItem={...item,rarity,id:inventoryItemId++};
+  inventory.unshift(invItem);
   const em=document.getElementById('emptyMsg'); if(em)em.remove();
   const grid=document.getElementById('invGrid');
   const div=document.createElement('div');
-  div.className=`inv-item rg-${rarity} new`;
+  div.className=`inv-item sellable rg-${rarity} new`;
+  div.dataset.itemId=String(invItem.id);
   div.title=item.name;
-  div.innerHTML=`<span class="item-emoji">${item.icon}</span><div class="item-label ${RARITY_CLASSES[rarity]}">${item.name}</div>`;
+  div.innerHTML=`<span class="item-emoji">${item.icon}</span><div class="item-label ${RARITY_CLASSES[rarity]}">${item.name}</div><div class="item-value">Sell ◈ ${item.value.toLocaleString()}</div>`;
+  div.onclick=()=>sellInventoryItem(invItem.id);
   grid.insertBefore(div,grid.firstChild);
-  document.getElementById('invCount').textContent=`${inventory.length} items`;
+  syncInventoryState();
   setTimeout(()=>div.classList.remove('new'),400);
+}
+
+function sellInventoryItem(itemId){
+  const idx=inventory.findIndex(x=>x.id===itemId);
+  if(idx===-1)return;
+  const [item]=inventory.splice(idx,1);
+  addCoins(item.value);
+  const node=document.querySelector(`.inv-item[data-item-id="${itemId}"]`);
+  if(node)node.remove();
+  syncInventoryState();
+  showToast(`Sold ${item.icon} ${item.name} for ◈ ${item.value.toLocaleString()}`);
+}
+
+function syncInventoryState(){
+  document.getElementById('invCount').textContent=`${inventory.length} items`;
+  const grid=document.getElementById('invGrid');
+  const hasItems=inventory.length>0;
+  const empty=document.getElementById('emptyMsg');
+  if(!hasItems&&!empty){
+    const msg=document.createElement('div');
+    msg.className='inv-empty';
+    msg.id='emptyMsg';
+    msg.innerHTML='<span class="inv-empty-icon">📦</span><span>Open a vault to begin</span>';
+    grid.appendChild(msg);
+  }
 }
 function updateVStats(){
   document.getElementById('statOpened').textContent=vStats.opened;
@@ -405,7 +490,7 @@ function updateVStats(){
 }
 
 // ===== CLICKER =====
-let clickPower=1, totalMined=0, totalClicks=0;
+let clickPower=1, totalMined=0, totalClicks=0, generatorPowerMultiplier=1;
 const UPGRADES=[
   {id:'u1',name:'Sharpened Pick',icon:'⛏️',desc:'Double your click power',cost:50,level:0,maxLevel:1,color:'#f59e0b',bg:'rgba(245,158,11,0.1)',apply(){clickPower*=2;}},
   {id:'u2',name:'Iron Knuckles',icon:'👊',desc:'+5 coins per click',cost:200,level:0,maxLevel:1,color:'#94a3b8',bg:'rgba(148,163,184,0.1)',apply(){clickPower+=5;}},
@@ -414,6 +499,15 @@ const UPGRADES=[
   {id:'u5',name:'Arcane Amplifier',icon:'🔮',desc:'×5 all click power',cost:8000,level:0,maxLevel:1,color:'#a855f7',bg:'rgba(168,85,247,0.1)',apply(){clickPower*=5;}},
   {id:'u6',name:'Dragon Pickaxe',icon:'🐉',desc:'+200 coins per click',cost:25000,level:0,maxLevel:1,color:'#ef4444',bg:'rgba(239,68,68,0.1)',apply(){clickPower+=200;}},
   {id:'u7',name:'Void Extractor',icon:'🕳️',desc:'×10 all click power',cost:100000,level:0,maxLevel:1,color:'#ec4899',bg:'rgba(236,72,153,0.1)',apply(){clickPower*=10;}},
+  {id:'u8',name:'Titan Grip',icon:'🧲',desc:'+1000 coins per click',cost:350000,level:0,maxLevel:1,color:'#fb7185',bg:'rgba(251,113,133,0.1)',apply(){clickPower+=1000;}},
+  {id:'u9',name:'Quantum Rhythm',icon:'🧠',desc:'×3 all click power',cost:900000,level:0,maxLevel:1,color:'#22d3ee',bg:'rgba(34,211,238,0.12)',apply(){clickPower*=3;}},
+  {id:'u10',name:'Celestial Strike',icon:'☄️',desc:'+5000 coins per click',cost:2000000,level:0,maxLevel:1,color:'#fde047',bg:'rgba(253,224,71,0.12)',apply(){clickPower+=5000;}},
+  {id:'gu1',name:'Generator Tuning',icon:'⚙️',desc:'Generators produce ×1.5',cost:300,level:0,maxLevel:1,color:'#34d399',bg:'rgba(52,211,153,0.12)',apply(){generatorPowerMultiplier*=1.5;}},
+  {id:'gu2',name:'Power Bus Upgrade',icon:'🔋',desc:'Generators produce ×2',cost:1800,level:0,maxLevel:1,color:'#10b981',bg:'rgba(16,185,129,0.12)',apply(){generatorPowerMultiplier*=2;}},
+  {id:'gu3',name:'Automation Matrix',icon:'🧰',desc:'Generators produce ×2.5',cost:9000,level:0,maxLevel:1,color:'#14b8a6',bg:'rgba(20,184,166,0.12)',apply(){generatorPowerMultiplier*=2.5;}},
+  {id:'gu4',name:'Flux Overclock',icon:'🛰️',desc:'Generators produce ×3',cost:40000,level:0,maxLevel:1,color:'#38bdf8',bg:'rgba(56,189,248,0.12)',apply(){generatorPowerMultiplier*=3;}},
+  {id:'gu5',name:'Singularity Turbines',icon:'🌪️',desc:'Generators produce ×4',cost:175000,level:0,maxLevel:1,color:'#c084fc',bg:'rgba(192,132,252,0.12)',apply(){generatorPowerMultiplier*=4;}},
+  {id:'gu6',name:'Omniforge Protocol',icon:'🧬',desc:'Generators produce ×5',cost:800000,level:0,maxLevel:1,color:'#f43f5e',bg:'rgba(244,63,94,0.12)',apply(){generatorPowerMultiplier*=5;}},
 ];
 const GENERATORS=[
   {id:'g1',name:'Coin Goblin',icon:'👺',baseCps:0.5,baseCost:75,owned:0,progress:0,color:'#22c55e'},
@@ -424,7 +518,7 @@ const GENERATORS=[
   {id:'g6',name:'Void Siphon',icon:'🌀',baseCps:1000,baseCost:120000,owned:0,progress:0,color:'#ef4444'},
 ];
 const genCost=g=>Math.floor(g.baseCost*Math.pow(1.15,g.owned));
-const genCps=g=>g.owned*g.baseCps;
+const genCps=g=>g.owned*g.baseCps*generatorPowerMultiplier;
 const totalCps=()=>GENERATORS.reduce((s,g)=>s+genCps(g),0);
 
 function handleClick(e){
@@ -452,16 +546,22 @@ function updateClickStats(){
 }
 
 function renderUpgrades(){
-  document.getElementById('upgradesList').innerHTML=UPGRADES.map(u=>{
-    const bought=u.level>=u.maxLevel;
-    const canAfford=!bought&&coins>=u.cost;
-    return `<div class="upgrade-item ${bought?'maxed':canAfford?'can-afford':'locked'}" onclick="buyUpgrade('${u.id}')">
+  const available=UPGRADES
+    .filter(u=>u.level<u.maxLevel)
+    .sort((a,b)=>a.cost-b.cost);
+  if(available.length===0){
+    document.getElementById('upgradesList').innerHTML='<div class="upgrade-item" style="cursor:default;opacity:0.75"><div class="upgrade-info"><div class="upgrade-name">All upgrades purchased</div><div class="upgrade-desc">You have bought every available upgrade.</div></div></div>';
+    return;
+  }
+  document.getElementById('upgradesList').innerHTML=available.map(u=>{
+    const canAfford=coins>=u.cost;
+    return `<div class="upgrade-item ${canAfford?'can-afford':'locked'}" data-upgrade-id="${u.id}" onclick="buyUpgrade('${u.id}')">
       <div class="upgrade-icon-box" style="background:${u.bg}">${u.icon}</div>
       <div class="upgrade-info">
         <div class="upgrade-name" style="color:${u.color}">${u.name}</div>
         <div class="upgrade-desc">${u.desc}</div>
       </div>
-      <div>${bought?`<div class="upgrade-owned-badge">✓ Owned</div>`:`<div class="upgrade-cost">◈ ${u.cost.toLocaleString()}</div>`}</div>
+      <div><div class="upgrade-cost">◈ ${u.cost.toLocaleString()}</div></div>
     </div>`;
   }).join('');
 }
@@ -471,6 +571,7 @@ function buyUpgrade(id){
   if(!u||u.level>=u.maxLevel||coins<u.cost)return;
   setCoins(coins-u.cost); u.level++; u.apply();
   updateClickStats(); renderUpgrades();
+  if(u.id.startsWith('gu'))renderGenerators();
   showToast(`${u.icon} ${u.name} purchased!`);
 }
 
@@ -479,7 +580,7 @@ function renderGenerators(){
   document.getElementById('genList').innerHTML=GENERATORS.map(g=>{
     const cost=genCost(g), canAfford=coins>=cost;
     const share=cps>0?(genCps(g)/cps*100):0;
-    return `<div class="gen-item ${canAfford?'can-afford':''}" onclick="buyGenerator('${g.id}')">
+    return `<div class="gen-item ${canAfford?'can-afford':''}" data-generator-id="${g.id}" onclick="buyGenerator('${g.id}')">
       <div class="gen-header-row">
         <span class="gen-icon">${g.icon}</span>
         <span class="gen-name">${g.name}</span>
@@ -502,6 +603,23 @@ function buyGenerator(id){
   showToast(`${g.icon} ${g.name} hired! (×${g.owned})`);
 }
 
+function updateShopAffordability(){
+  UPGRADES.forEach(u=>{
+    const node=document.querySelector(`.upgrade-item[data-upgrade-id="${u.id}"]`);
+    if(!node)return;
+    const bought=u.level>=u.maxLevel;
+    node.classList.toggle('maxed',bought);
+    node.classList.toggle('can-afford',!bought&&coins>=u.cost);
+    node.classList.toggle('locked',!bought&&coins<u.cost);
+  });
+
+  GENERATORS.forEach(g=>{
+    const node=document.querySelector(`.gen-item[data-generator-id="${g.id}"]`);
+    if(!node)return;
+    node.classList.toggle('can-afford',coins>=genCost(g));
+  });
+}
+
 // Passive tick every 50ms
 let passiveAccum=0;
 setInterval(()=>{
@@ -516,7 +634,7 @@ setInterval(()=>{
   // Animate each generator's progress bar
   GENERATORS.forEach(g=>{
     if(g.owned===0)return;
-    g.progress+=genCps(g)*0.05/g.baseCps*20;
+    g.progress+=g.owned;
     if(g.progress>=100)g.progress=0;
     const bar=document.getElementById('gp-'+g.id);
     if(bar)bar.style.width=g.progress.toFixed(1)+'%';
