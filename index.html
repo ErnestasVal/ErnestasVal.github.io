@@ -63,6 +63,19 @@
   .open-btn:active{transform:translateY(0);}
   .open-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none;}
   .open-btn-cost{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.6rem;}
+  .spin-area{position:absolute;left:1.5rem;right:1.5rem;top:48%;transform:translateY(-50%);height:104px;pointer-events:none;opacity:0;transition:opacity 0.2s ease;z-index:2;}
+  .spin-area.active{opacity:1;}
+  .spin-window{height:100%;overflow:hidden;border-radius:10px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(0,0,0,0.15),rgba(0,0,0,0.35));position:relative;}
+  .spin-window::before,.spin-window::after{content:'';position:absolute;top:0;bottom:0;width:56px;z-index:2;pointer-events:none;}
+  .spin-window::before{left:0;background:linear-gradient(90deg,var(--surface) 0%,rgba(36,36,35,0) 100%);}
+  .spin-window::after{right:0;background:linear-gradient(270deg,var(--surface) 0%,rgba(36,36,35,0) 100%);}
+  .spin-pointer{position:absolute;left:50%;transform:translateX(-50%);top:-1px;width:2px;height:106px;background:var(--accent);box-shadow:0 0 15px rgba(251,105,108,0.9);z-index:3;}
+  .spin-strip{display:flex;gap:8px;align-items:center;height:100%;padding:0 12px;transform:translateX(0);will-change:transform;}
+  .spin-item{width:68px;height:80px;flex:0 0 auto;border-radius:8px;border:1px solid var(--border);background:var(--surface2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.15rem;}
+  .spin-item-icon{font-size:1.5rem;line-height:1;}
+  .spin-item-name{font-size:0.52rem;max-width:58px;text-align:center;line-height:1.1;color:var(--muted);}
+  .spin-area.landed .spin-window{animation:spinFlash 0.28s ease;}
+  @keyframes spinFlash{0%{box-shadow:0 0 0 rgba(251,105,108,0);}50%{box-shadow:0 0 28px rgba(251,105,108,0.45);}100%{box-shadow:0 0 0 rgba(251,105,108,0);}}
 
   /* INVENTORY */
   .inventory-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;height:420px;display:flex;flex-direction:column;}
@@ -219,6 +232,12 @@
           <div class="chest-visual" id="chestVisual" onclick="openBox()">🔒</div>
           <button class="open-btn" id="openBtn" onclick="openBox()">Open Vault</button>
           <div class="open-btn-cost" id="btnCost">◈ 50 per open</div>
+          <div class="spin-area" id="spinArea">
+            <div class="spin-window">
+              <div class="spin-pointer"></div>
+              <div class="spin-strip" id="spinStrip"></div>
+            </div>
+          </div>
         </div>
         <div class="stats-bar">
           <div class="stat-card"><div class="stat-label">Opened</div><div class="stat-value" id="statOpened">0</div></div>
@@ -393,6 +412,47 @@ function rollRarity(){
   for(const rarity of RARITY_ORDER){c+=selectedBox.odds[rarity];if(r<c)return rarity;}
   return 'common';
 }
+function getRandomSpinEntry(){
+  const rarity=rollRarity();
+  const pool=selectedBox.isSecret?ITEMS.secret:ITEMS[rarity];
+  const item=pool[Math.floor(Math.random()*pool.length)];
+  return {item,rarity};
+}
+function runSpinAnimation(winningItem,winningRarity,onDone){
+  const area=document.getElementById('spinArea');
+  const strip=document.getElementById('spinStrip');
+  const cellWidth=76;
+  const total=42;
+  const targetIndex=34;
+  const entries=[];
+  for(let i=0;i<total;i++)entries.push(getRandomSpinEntry());
+  entries[targetIndex]={item:winningItem,rarity:winningRarity};
+  strip.innerHTML=entries.map(e=>`<div class="spin-item rg-${e.rarity}"><span class="spin-item-icon">${e.item.icon}</span><div class="spin-item-name">${e.item.name}</div></div>`).join('');
+
+  area.classList.remove('landed');
+  area.classList.add('active');
+  strip.style.transition='none';
+  strip.style.transform='translateX(0px)';
+
+  const windowEl=area.querySelector('.spin-window');
+  const centerOffset=(windowEl.clientWidth/2)-(cellWidth/2)-12;
+  const targetX=-(targetIndex*cellWidth-centerOffset);
+
+  requestAnimationFrame(()=>{
+    strip.style.transition='transform 1.75s cubic-bezier(0.08,0.62,0.12,1)';
+    strip.style.transform=`translateX(${targetX}px)`;
+  });
+
+  setTimeout(()=>{
+    area.classList.add('landed');
+    spawnParticles(RARITY_COLORS[winningRarity],winningRarity==='mythic'?28:14);
+  },1750);
+
+  setTimeout(()=>{
+    area.classList.remove('active');
+    onDone();
+  },2050);
+}
 function openBox(){
   if(isOpening||!isBoxUnlocked(selectedBox))return;
   const currentCost=getCurrentBoxCost(selectedBox);
@@ -416,8 +476,8 @@ function openBox(){
   if(rarity==='legendary'||rarity==='mythic')vStats.legendaries++;
   if(!vStats.best||RARITY_ORDER.indexOf(rarity)>RARITY_ORDER.indexOf(vStats.best))vStats.best=rarity;
   updateVStats();
-  setTimeout(()=>showReveal(item,rarity),700);
-  setTimeout(()=>{addToInventory(item,rarity);isOpening=false;updateBtn();},1800);
+  runSpinAnimation(item,rarity,()=>showReveal(item,rarity));
+  setTimeout(()=>{addToInventory(item,rarity);isOpening=false;updateBtn();},2800);
 }
 function showReveal(item,rarity){
   const color=RARITY_COLORS[rarity];
@@ -493,31 +553,31 @@ function updateVStats(){
 let clickPower=1, totalMined=0, totalClicks=0, generatorPowerMultiplier=1;
 const UPGRADES=[
   {id:'u1',name:'Sharpened Pick',icon:'⛏️',desc:'Double your click power',cost:50,level:0,maxLevel:1,color:'#f59e0b',bg:'rgba(245,158,11,0.1)',apply(){clickPower*=2;}},
-  {id:'u2',name:'Iron Knuckles',icon:'👊',desc:'+5 coins per click',cost:200,level:0,maxLevel:1,color:'#94a3b8',bg:'rgba(148,163,184,0.1)',apply(){clickPower+=5;}},
-  {id:'u3',name:'Gold Rush',icon:'✨',desc:'Triple click power',cost:500,level:0,maxLevel:1,color:'#fbbf24',bg:'rgba(251,191,36,0.1)',apply(){clickPower*=3;}},
-  {id:'u4',name:'Mithril Drill',icon:'🔩',desc:'+25 coins per click',cost:2000,level:0,maxLevel:1,color:'#60a5fa',bg:'rgba(96,165,250,0.1)',apply(){clickPower+=25;}},
-  {id:'u5',name:'Arcane Amplifier',icon:'🔮',desc:'×5 all click power',cost:8000,level:0,maxLevel:1,color:'#a855f7',bg:'rgba(168,85,247,0.1)',apply(){clickPower*=5;}},
-  {id:'u6',name:'Dragon Pickaxe',icon:'🐉',desc:'+200 coins per click',cost:25000,level:0,maxLevel:1,color:'#ef4444',bg:'rgba(239,68,68,0.1)',apply(){clickPower+=200;}},
-  {id:'u7',name:'Void Extractor',icon:'🕳️',desc:'×10 all click power',cost:100000,level:0,maxLevel:1,color:'#ec4899',bg:'rgba(236,72,153,0.1)',apply(){clickPower*=10;}},
-  {id:'u8',name:'Titan Grip',icon:'🧲',desc:'+1000 coins per click',cost:350000,level:0,maxLevel:1,color:'#fb7185',bg:'rgba(251,113,133,0.1)',apply(){clickPower+=1000;}},
-  {id:'u9',name:'Quantum Rhythm',icon:'🧠',desc:'×3 all click power',cost:900000,level:0,maxLevel:1,color:'#22d3ee',bg:'rgba(34,211,238,0.12)',apply(){clickPower*=3;}},
-  {id:'u10',name:'Celestial Strike',icon:'☄️',desc:'+5000 coins per click',cost:2000000,level:0,maxLevel:1,color:'#fde047',bg:'rgba(253,224,71,0.12)',apply(){clickPower+=5000;}},
-  {id:'gu1',name:'Generator Tuning',icon:'⚙️',desc:'Generators produce ×1.5',cost:300,level:0,maxLevel:1,color:'#34d399',bg:'rgba(52,211,153,0.12)',apply(){generatorPowerMultiplier*=1.5;}},
-  {id:'gu2',name:'Power Bus Upgrade',icon:'🔋',desc:'Generators produce ×2',cost:1800,level:0,maxLevel:1,color:'#10b981',bg:'rgba(16,185,129,0.12)',apply(){generatorPowerMultiplier*=2;}},
-  {id:'gu3',name:'Automation Matrix',icon:'🧰',desc:'Generators produce ×2.5',cost:9000,level:0,maxLevel:1,color:'#14b8a6',bg:'rgba(20,184,166,0.12)',apply(){generatorPowerMultiplier*=2.5;}},
-  {id:'gu4',name:'Flux Overclock',icon:'🛰️',desc:'Generators produce ×3',cost:40000,level:0,maxLevel:1,color:'#38bdf8',bg:'rgba(56,189,248,0.12)',apply(){generatorPowerMultiplier*=3;}},
-  {id:'gu5',name:'Singularity Turbines',icon:'🌪️',desc:'Generators produce ×4',cost:175000,level:0,maxLevel:1,color:'#c084fc',bg:'rgba(192,132,252,0.12)',apply(){generatorPowerMultiplier*=4;}},
-  {id:'gu6',name:'Omniforge Protocol',icon:'🧬',desc:'Generators produce ×5',cost:800000,level:0,maxLevel:1,color:'#f43f5e',bg:'rgba(244,63,94,0.12)',apply(){generatorPowerMultiplier*=5;}},
+  {id:'u2',name:'Iron Knuckles',icon:'👊',desc:'+5 coins per click',cost:150,level:0,maxLevel:1,color:'#94a3b8',bg:'rgba(148,163,184,0.1)',apply(){clickPower+=5;}},
+  {id:'u3',name:'Gold Rush',icon:'✨',desc:'Triple click power',cost:350,level:0,maxLevel:1,color:'#fbbf24',bg:'rgba(251,191,36,0.1)',apply(){clickPower*=3;}},
+  {id:'u4',name:'Mithril Drill',icon:'🔩',desc:'+25 coins per click',cost:1200,level:0,maxLevel:1,color:'#60a5fa',bg:'rgba(96,165,250,0.1)',apply(){clickPower+=25;}},
+  {id:'u5',name:'Arcane Amplifier',icon:'🔮',desc:'×5 all click power',cost:4500,level:0,maxLevel:1,color:'#a855f7',bg:'rgba(168,85,247,0.1)',apply(){clickPower*=5;}},
+  {id:'u6',name:'Dragon Pickaxe',icon:'🐉',desc:'+200 coins per click',cost:12000,level:0,maxLevel:1,color:'#ef4444',bg:'rgba(239,68,68,0.1)',apply(){clickPower+=200;}},
+  {id:'u7',name:'Void Extractor',icon:'🕳️',desc:'×10 all click power',cost:45000,level:0,maxLevel:1,color:'#ec4899',bg:'rgba(236,72,153,0.1)',apply(){clickPower*=10;}},
+  {id:'u8',name:'Titan Grip',icon:'🧲',desc:'+1000 coins per click',cost:150000,level:0,maxLevel:1,color:'#fb7185',bg:'rgba(251,113,133,0.1)',apply(){clickPower+=1000;}},
+  {id:'u9',name:'Quantum Rhythm',icon:'🧠',desc:'×3 all click power',cost:350000,level:0,maxLevel:1,color:'#22d3ee',bg:'rgba(34,211,238,0.12)',apply(){clickPower*=3;}},
+  {id:'u10',name:'Celestial Strike',icon:'☄️',desc:'+5000 coins per click',cost:700000,level:0,maxLevel:1,color:'#fde047',bg:'rgba(253,224,71,0.12)',apply(){clickPower+=5000;}},
+  {id:'gu1',name:'Generator Tuning',icon:'⚙️',desc:'Generators produce ×1.5',cost:220,level:0,maxLevel:1,color:'#34d399',bg:'rgba(52,211,153,0.12)',apply(){generatorPowerMultiplier*=1.5;}},
+  {id:'gu2',name:'Power Bus Upgrade',icon:'🔋',desc:'Generators produce ×2',cost:900,level:0,maxLevel:1,color:'#10b981',bg:'rgba(16,185,129,0.12)',apply(){generatorPowerMultiplier*=2;}},
+  {id:'gu3',name:'Automation Matrix',icon:'🧰',desc:'Generators produce ×2.5',cost:3500,level:0,maxLevel:1,color:'#14b8a6',bg:'rgba(20,184,166,0.12)',apply(){generatorPowerMultiplier*=2.5;}},
+  {id:'gu4',name:'Flux Overclock',icon:'🛰️',desc:'Generators produce ×3',cost:12000,level:0,maxLevel:1,color:'#38bdf8',bg:'rgba(56,189,248,0.12)',apply(){generatorPowerMultiplier*=3;}},
+  {id:'gu5',name:'Singularity Turbines',icon:'🌪️',desc:'Generators produce ×4',cost:45000,level:0,maxLevel:1,color:'#c084fc',bg:'rgba(192,132,252,0.12)',apply(){generatorPowerMultiplier*=4;}},
+  {id:'gu6',name:'Omniforge Protocol',icon:'🧬',desc:'Generators produce ×5',cost:160000,level:0,maxLevel:1,color:'#f43f5e',bg:'rgba(244,63,94,0.12)',apply(){generatorPowerMultiplier*=5;}},
 ];
 const GENERATORS=[
-  {id:'g1',name:'Coin Goblin',icon:'👺',baseCps:0.5,baseCost:75,owned:0,progress:0,color:'#22c55e'},
-  {id:'g2',name:'Mana Tap',icon:'💧',baseCps:3,baseCost:500,owned:0,progress:0,color:'#3b82f6'},
-  {id:'g3',name:'Rune Forge',icon:'🔥',baseCps:12,baseCost:2000,owned:0,progress:0,color:'#f97316'},
-  {id:'g4',name:'Crystal Mine',icon:'💎',baseCps:50,baseCost:8000,owned:0,progress:0,color:'#06b6d4'},
-  {id:'g5',name:'Ether Reactor',icon:'⚡',baseCps:200,baseCost:30000,owned:0,progress:0,color:'#a855f7'},
-  {id:'g6',name:'Void Siphon',icon:'🌀',baseCps:1000,baseCost:120000,owned:0,progress:0,color:'#ef4444'},
+  {id:'g1',name:'Coin Goblin',icon:'👺',baseCps:0.5,baseCost:60,owned:0,progress:0,color:'#22c55e'},
+  {id:'g2',name:'Mana Tap',icon:'💧',baseCps:3,baseCost:350,owned:0,progress:0,color:'#3b82f6'},
+  {id:'g3',name:'Rune Forge',icon:'🔥',baseCps:12,baseCost:1300,owned:0,progress:0,color:'#f97316'},
+  {id:'g4',name:'Crystal Mine',icon:'💎',baseCps:50,baseCost:4500,owned:0,progress:0,color:'#06b6d4'},
+  {id:'g5',name:'Ether Reactor',icon:'⚡',baseCps:200,baseCost:15000,owned:0,progress:0,color:'#a855f7'},
+  {id:'g6',name:'Void Siphon',icon:'🌀',baseCps:1000,baseCost:50000,owned:0,progress:0,color:'#ef4444'},
 ];
-const genCost=g=>Math.floor(g.baseCost*Math.pow(1.15,g.owned));
+const genCost=g=>Math.floor(g.baseCost*Math.pow(1.12,g.owned));
 const genCps=g=>g.owned*g.baseCps*generatorPowerMultiplier;
 const totalCps=()=>GENERATORS.reduce((s,g)=>s+genCps(g),0);
 
