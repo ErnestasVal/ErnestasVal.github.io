@@ -344,6 +344,7 @@ const RARITY_CLASSES={common:'r-common',rare:'r-rare',epic:'r-epic',legendary:'r
 
 const BOX_PRICE_GROWTH=1.05;
 const REGULAR_BOX_IDS=BOXES.filter(b=>!b.isSecret).map(b=>b.id);
+const SAVE_KEY='vaultSaveV1';
 let selectedBox=BOXES[0], inventory=[], isOpening=false, inventoryItemId=1;
 let boxOpenCounts=BOXES.reduce((acc,b)=>{acc[b.id]=0;return acc;},{});
 let secretUnlockedAnnounced=false;
@@ -358,6 +359,74 @@ function getSecretUnlockProgress(){
 function isBoxUnlocked(box){
   if(!box.isSecret)return true;
   return REGULAR_BOX_IDS.every(id=>(boxOpenCounts[id]||0)>=10);
+}
+
+function getUpgradeLevels(){
+  const levels={};
+  UPGRADES.forEach(u=>{levels[u.id]=u.level;});
+  return levels;
+}
+
+function applyUpgradeLevels(levels){
+  clickPower=1;
+  generatorPowerMultiplier=1;
+  UPGRADES.forEach(u=>{
+    const lvl=Math.max(0,Math.min(u.maxLevel,Number(levels?.[u.id]||0)));
+    u.level=lvl;
+    for(let i=0;i<lvl;i++)u.apply();
+  });
+}
+
+function saveGame(){
+  const payload={
+    coins,
+    totalMined,
+    totalClicks,
+    inventory,
+    inventoryItemId,
+    vStats,
+    boxOpenCounts,
+    secretUnlockedAnnounced,
+    selectedBoxId:selectedBox.id,
+    upgrades:getUpgradeLevels(),
+    generators:GENERATORS.map(g=>({id:g.id,owned:g.owned,progress:g.progress})),
+    passiveAccum,
+  };
+  localStorage.setItem(SAVE_KEY,JSON.stringify(payload));
+}
+
+function loadGame(){
+  const raw=localStorage.getItem(SAVE_KEY);
+  if(!raw)return;
+  try{
+    const data=JSON.parse(raw);
+    coins=Math.max(0,Math.floor(Number(data.coins)||0));
+    totalMined=Math.max(0,Math.floor(Number(data.totalMined)||0));
+    totalClicks=Math.max(0,Math.floor(Number(data.totalClicks)||0));
+    inventory=Array.isArray(data.inventory)?data.inventory:[];
+    if(typeof data.inventoryItemId==='number')inventoryItemId=data.inventoryItemId;
+    else inventoryItemId=inventory.reduce((m,it)=>Math.max(m,Number(it.id)||0),0)+1;
+    vStats={...vStats,...(data.vStats||{})};
+    boxOpenCounts={...boxOpenCounts,...(data.boxOpenCounts||{})};
+    secretUnlockedAnnounced=!!data.secretUnlockedAnnounced;
+
+    if(Array.isArray(data.generators)){
+      data.generators.forEach(saved=>{
+        const g=GENERATORS.find(x=>x.id===saved.id);
+        if(!g)return;
+        g.owned=Math.max(0,Math.floor(Number(saved.owned)||0));
+        g.progress=Math.max(0,Math.min(100,Number(saved.progress)||0));
+      });
+    }
+
+    applyUpgradeLevels(data.upgrades||{});
+    passiveAccum=Math.max(0,Number(data.passiveAccum)||0);
+
+    const savedBox=BOXES.find(b=>b.id===data.selectedBoxId);
+    selectedBox=(savedBox&&isBoxUnlocked(savedBox))?savedBox:BOXES[0];
+  }catch(err){
+    console.error('Failed to load save:',err);
+  }
 }
 
 function renderBoxGrid(){
@@ -468,6 +537,7 @@ function openBox(){
     secretUnlockedAnnounced=true;
     showToast('Secret vault unlocked');
   }
+  saveGame();
   const chest=document.getElementById('chestVisual');
   chest.classList.add('opening'); setTimeout(()=>chest.classList.remove('opening'),700);
   const rarity=rollRarity();
@@ -514,6 +584,7 @@ function addToInventory(item,rarity){
   div.onclick=()=>sellInventoryItem(invItem.id);
   grid.insertBefore(div,grid.firstChild);
   syncInventoryState();
+  saveGame();
   setTimeout(()=>div.classList.remove('new'),400);
 }
 
@@ -525,7 +596,32 @@ function sellInventoryItem(itemId){
   const node=document.querySelector(`.inv-item[data-item-id="${itemId}"]`);
   if(node)node.remove();
   syncInventoryState();
+  saveGame();
   showToast(`Sold ${item.icon} ${item.name} for ◈ ${item.value.toLocaleString()}`);
+}
+
+function renderInventoryFromState(){
+  const grid=document.getElementById('invGrid');
+  grid.innerHTML='';
+  if(inventory.length===0){
+    const msg=document.createElement('div');
+    msg.className='inv-empty';
+    msg.id='emptyMsg';
+    msg.innerHTML='<span class="inv-empty-icon">📦</span><span>Open a vault to begin</span>';
+    grid.appendChild(msg);
+    syncInventoryState();
+    return;
+  }
+  inventory.forEach(invItem=>{
+    const div=document.createElement('div');
+    div.className=`inv-item sellable rg-${invItem.rarity}`;
+    div.dataset.itemId=String(invItem.id);
+    div.title=invItem.name;
+    div.innerHTML=`<span class="item-emoji">${invItem.icon}</span><div class="item-label ${RARITY_CLASSES[invItem.rarity]}">${invItem.name}</div><div class="item-value">Sell ◈ ${invItem.value.toLocaleString()}</div>`;
+    div.onclick=()=>sellInventoryItem(invItem.id);
+    grid.appendChild(div);
+  });
+  syncInventoryState();
 }
 
 function syncInventoryState(){
@@ -632,6 +728,7 @@ function buyUpgrade(id){
   setCoins(coins-u.cost); u.level++; u.apply();
   updateClickStats(); renderUpgrades();
   if(u.id.startsWith('gu'))renderGenerators();
+  saveGame();
   showToast(`${u.icon} ${u.name} purchased!`);
 }
 
@@ -660,6 +757,7 @@ function buyGenerator(id){
   const cost=genCost(g); if(coins<cost)return;
   setCoins(coins-cost); g.owned++;
   updateClickStats(); renderGenerators();
+  saveGame();
   showToast(`${g.icon} ${g.name} hired! (×${g.owned})`);
 }
 
@@ -724,8 +822,16 @@ document.addEventListener('keydown',e=>{
 });
 
 // INIT
-renderBoxGrid(); selectBox('bronze');
-renderUpgrades(); renderGenerators(); updateClickStats();
+loadGame();
+renderBoxGrid();
+selectBox(selectedBox.id);
+renderUpgrades();
+renderGenerators();
+renderInventoryFromState();
+setCoins(coins);
+updateClickStats();
+setInterval(saveGame,5000);
+window.addEventListener('beforeunload',saveGame);
 </script>
 </body>
 </html>
