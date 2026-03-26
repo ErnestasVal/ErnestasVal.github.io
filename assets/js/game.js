@@ -1,9 +1,14 @@
 // ===== SHARED =====
 let coins = 0;
 let shouldPersist = true;
+
+function asWholeDisplay(value){
+  return Math.floor(Math.max(0,Number(value)||0)).toLocaleString();
+}
+
 function setCoins(v){
-  coins = Math.max(0, Math.floor(v));
-  document.getElementById('coins').textContent = coins.toLocaleString();
+  coins = Math.max(0, Number(v)||0);
+  document.getElementById('coins').textContent = asWholeDisplay(coins);
   updateBtn(); updateShopAffordability();
 }
 function addCoins(n){ setCoins(coins + n); }
@@ -21,6 +26,30 @@ let boxOpenCounts=BOXES.reduce((acc,b)=>{acc[b.id]=0;return acc;},{});
 let secretUnlockedAnnounced=false;
 let vStats={opened:0,spent:0,legendaries:0,best:null};
 
+function escapeHtml(value){
+  return String(value??'').replace(/[&<>"']/g,ch=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[ch]));
+}
+
+function itemVisualMarkup(item,emojiClass,imageClass){
+  if(item?.imageData){
+    return `<img class="${imageClass}" src="${item.imageData}" alt="${escapeHtml(item.name||'Item image')}">`;
+  }
+  if(typeof item?.image==='string'&&item.image.trim()){
+    return `<img class="${imageClass}" src="${escapeHtml(item.image.trim())}" alt="${escapeHtml(item.name||'Item image')}">`;
+  }
+  return `<span class="${emojiClass}">${item?.icon||'🖼️'}</span>`;
+}
+
+function getItemPoolForRarity(rarity){
+  return ITEMS[rarity]||[];
+}
+
 function getCurrentBoxCost(box){
   return Math.floor(box.cost*Math.pow(BOX_PRICE_GROWTH,boxOpenCounts[box.id]||0));
 }
@@ -30,7 +59,7 @@ function getSecretUnlockProgress(){
 function getSecretUnlockBreakdown(){
   return REGULAR_BOX_IDS.map(id=>{
     const box=BOXES.find(b=>b.id===id);
-    const label=box?box.name.replace(' Vault',''):id;
+    const label=box?box.name.replace(' Banner',''):id;
     const opens=Math.min(boxOpenCounts[id]||0,10);
     return `${label} ${opens}/10`;
   }).join(' | ');
@@ -47,7 +76,9 @@ function getUpgradeLevels(){
 }
 
 function applyUpgradeLevels(levels){
-  clickPower=1;
+  clickPowerBase=1;
+  clickPowerMultiplier=1;
+  recomputeClickPower();
   generatorPowerMultiplier=1;
   resetGeneratorMultipliers();
   UPGRADES.forEach(u=>{
@@ -77,7 +108,7 @@ function saveGame(){
 }
 
 function resetGame(){
-  const confirmed=window.confirm('Reset all progress? This will clear your coins, upgrades, and inventory.');
+  const confirmed=window.confirm('Reset all progress? This will clear your coins, upgrades, and collection.');
   if(!confirmed)return;
   shouldPersist=false;
   localStorage.removeItem(SAVE_KEY);
@@ -89,7 +120,7 @@ function loadGame(){
   if(!raw)return;
   try{
     const data=JSON.parse(raw);
-    coins=Math.max(0,Math.floor(Number(data.coins)||0));
+    coins=Math.max(0,Number(data.coins)||0);
     totalMined=Math.max(0,Math.floor(Number(data.totalMined)||0));
     totalClicks=Math.max(0,Math.floor(Number(data.totalClicks)||0));
     inventory=Array.isArray(data.inventory)?data.inventory:[];
@@ -125,7 +156,7 @@ function renderBoxGrid(){
     const opens=boxOpenCounts[b.id]||0;
     const openedLabel=b.isSecret?`Opened: ${opens}`:`Opened: ${opens}`;
     const secretProgress=b.isSecret
-      ?`<div class="box-price">Need 10 opens of each vault</div><div class="box-opened">${getSecretUnlockBreakdown()}</div><div class="box-opened">Total: ${getSecretUnlockProgress()}/${REGULAR_BOX_IDS.length*10}</div>`
+      ?`<div class="box-price">Need 10 pulls of each banner</div><div class="box-opened">${getSecretUnlockBreakdown()}</div><div class="box-opened">Total: ${getSecretUnlockProgress()}/${REGULAR_BOX_IDS.length*10}</div>`
       :'';
     return `<div class="box-card ${b.isSecret?'secret-card':''} ${unlocked?'':'locked'}" id="card-${b.id}" onclick="selectBox('${b.id}')">
       <span class="box-icon">${b.icon}</span>
@@ -141,7 +172,7 @@ function selectBox(id){
   const nextBox=BOXES.find(b=>b.id===id);
   if(!nextBox)return;
   if(!isBoxUnlocked(nextBox)){
-    showToast('Secret vault locked: open each normal vault 10 times');
+    showToast('Secret banner locked: pull each normal banner 10 times');
     return;
   }
   selectedBox=nextBox;
@@ -149,7 +180,7 @@ function selectBox(id){
   document.getElementById('card-'+id).classList.add('selected');
   document.getElementById('chestVisual').textContent=selectedBox.icon;
   document.getElementById('chestVisual').style.filter=`drop-shadow(0 0 20px ${selectedBox.color}55)`;
-  document.getElementById('btnCost').textContent=`◈ ${getCurrentBoxCost(selectedBox).toLocaleString()} per open`;
+  document.getElementById('btnCost').textContent=`◈ ${getCurrentBoxCost(selectedBox).toLocaleString()} per pull`;
   renderOdds(); updateBtn();
 }
 function renderOdds(){
@@ -165,7 +196,7 @@ function updateBtn(){
   }
   const cost=getCurrentBoxCost(selectedBox);
   btn.disabled=coins<cost||isOpening;
-  btn.textContent=coins<cost?'Insufficient Funds':'Open Vault';
+  btn.textContent=coins<cost?'Insufficient Funds':'Pull Banner';
 }
 function rollRarity(){
   const r=Math.random()*100; let c=0;
@@ -201,7 +232,7 @@ function createRewardedItem(baseItem,rarity,box){
 
 function getRandomSpinEntry(){
   const rarity=rollRarity();
-  const pool=selectedBox.isSecret?ITEMS.secret:ITEMS[rarity];
+  const pool=selectedBox.isSecret?ITEMS.secret:getItemPoolForRarity(rarity);
   const item=pool[Math.floor(Math.random()*pool.length)];
   return {item,rarity};
 }
@@ -214,7 +245,7 @@ function runSpinAnimation(winningItem,winningRarity,onDone){
   const entries=[];
   for(let i=0;i<total;i++)entries.push(getRandomSpinEntry());
   entries[targetIndex]={item:winningItem,rarity:winningRarity};
-  strip.innerHTML=entries.map(e=>`<div class="spin-item rg-${e.rarity}"><span class="spin-item-icon">${e.item.icon}</span><div class="spin-item-name">${e.item.name}</div></div>`).join('');
+  strip.innerHTML=entries.map(e=>`<div class="spin-item rg-${e.rarity}">${itemVisualMarkup(e.item,'spin-item-icon','spin-item-image')}<div class="spin-item-name">${escapeHtml(e.item.name)}</div></div>`).join('');
 
   area.classList.remove('landed');
   area.classList.add('active');
@@ -253,13 +284,13 @@ function openBox(){
   selectBox(activeId);
   if(isBoxUnlocked(BOXES.find(b=>b.isSecret))&&!secretUnlockedAnnounced){
     secretUnlockedAnnounced=true;
-    showToast('Secret vault unlocked');
+    showToast('Secret banner unlocked');
   }
   saveGame();
   const chest=document.getElementById('chestVisual');
   chest.classList.add('opening'); setTimeout(()=>chest.classList.remove('opening'),700);
   const rarity=rollRarity();
-  const itemPool=selectedBox.isSecret?ITEMS.secret:ITEMS[rarity];
+  const itemPool=selectedBox.isSecret?ITEMS.secret:getItemPoolForRarity(rarity);
   const baseItem=itemPool[Math.floor(Math.random()*itemPool.length)];
   const item=createRewardedItem(baseItem,rarity,selectedBox);
   if(rarity==='legendary'||rarity==='mythic')vStats.legendaries++;
@@ -270,7 +301,7 @@ function openBox(){
 }
 function showReveal(item,rarity){
   const color=RARITY_COLORS[rarity];
-  document.getElementById('revealIcon').textContent=item.icon;
+  document.getElementById('revealIcon').innerHTML=itemVisualMarkup(item,'reveal-emoji','reveal-image');
   document.getElementById('revealRarity').textContent=RARITY_LABELS[rarity];
   document.getElementById('revealRarity').style.color=color;
   document.getElementById('revealName').textContent=item.name;
@@ -299,7 +330,7 @@ function addToInventory(item,rarity){
   div.className=`inv-item sellable rg-${rarity} new`;
   div.dataset.itemId=String(invItem.id);
   div.title=item.name;
-  div.innerHTML=`<span class="item-emoji">${item.icon}</span><div class="item-label ${RARITY_CLASSES[rarity]}">${item.name}</div><div class="item-value">Sell ◈ ${item.value.toLocaleString()}</div>`;
+  div.innerHTML=`${itemVisualMarkup(item,'item-emoji','item-image')}<div class="item-label ${RARITY_CLASSES[rarity]}">${escapeHtml(item.name)}</div><div class="item-value">Sell ◈ ${item.value.toLocaleString()}</div>`;
   div.onclick=()=>sellInventoryItem(invItem.id);
   grid.insertBefore(div,grid.firstChild);
   syncInventoryState();
@@ -326,7 +357,7 @@ function renderInventoryFromState(){
     const msg=document.createElement('div');
     msg.className='inv-empty';
     msg.id='emptyMsg';
-    msg.innerHTML='<span class="inv-empty-icon">📦</span><span>Open a vault to begin</span>';
+    msg.innerHTML='<span class="inv-empty-icon">📦</span><span>Pull a banner to begin</span>';
     grid.appendChild(msg);
     syncInventoryState();
     return;
@@ -336,7 +367,7 @@ function renderInventoryFromState(){
     div.className=`inv-item sellable rg-${invItem.rarity}`;
     div.dataset.itemId=String(invItem.id);
     div.title=invItem.name;
-    div.innerHTML=`<span class="item-emoji">${invItem.icon}</span><div class="item-label ${RARITY_CLASSES[invItem.rarity]}">${invItem.name}</div><div class="item-value">Sell ◈ ${invItem.value.toLocaleString()}</div>`;
+    div.innerHTML=`${itemVisualMarkup(invItem,'item-emoji','item-image')}<div class="item-label ${RARITY_CLASSES[invItem.rarity]}">${escapeHtml(invItem.name)}</div><div class="item-value">Sell ◈ ${invItem.value.toLocaleString()}</div>`;
     div.onclick=()=>sellInventoryItem(invItem.id);
     grid.appendChild(div);
   });
@@ -352,7 +383,7 @@ function syncInventoryState(){
     const msg=document.createElement('div');
     msg.className='inv-empty';
     msg.id='emptyMsg';
-    msg.innerHTML='<span class="inv-empty-icon">📦</span><span>Open a vault to begin</span>';
+    msg.innerHTML='<span class="inv-empty-icon">📦</span><span>Pull a banner to begin</span>';
     grid.appendChild(msg);
   }
 }
@@ -365,8 +396,22 @@ function updateVStats(){
 }
 
 // ===== CLICKER =====
-let clickPower=1, totalMined=0, totalClicks=0, generatorPowerMultiplier=1;
+let clickPower=1, clickPowerBase=1, clickPowerMultiplier=1, totalMined=0, totalClicks=0, generatorPowerMultiplier=1;
 let generatorSpecificMultipliers={};
+
+function recomputeClickPower(){
+  clickPower=clickPowerBase*clickPowerMultiplier;
+}
+
+function addClickPower(amount){
+  clickPowerBase+=amount;
+  recomputeClickPower();
+}
+
+function multiplyClickPower(multiplier){
+  clickPowerMultiplier*=multiplier;
+  recomputeClickPower();
+}
 function resetGeneratorMultipliers(){
   generatorSpecificMultipliers=GENERATORS.reduce((acc,g)=>{
     acc[g.id]=1;
@@ -390,15 +435,15 @@ function handleClick(e){
   const drift=(Math.random()-0.5)*60;
   const el=document.createElement('div');
   el.className='float-coin';
-  el.textContent='+'+earned.toLocaleString();
+  el.textContent='+'+asWholeDisplay(earned);
   el.style.cssText=`left:${e.clientX-20}px;top:${e.clientY-10}px;--drift:${drift}px`;
   document.body.appendChild(el); setTimeout(()=>el.remove(),900);
 }
 
 function updateClickStats(){
-  document.getElementById('perClickDisplay').textContent='+'+clickPower.toLocaleString();
+  document.getElementById('perClickDisplay').textContent='+'+asWholeDisplay(clickPower);
   document.getElementById('perSecDisplay').textContent=totalCps().toFixed(1);
-  document.getElementById('totalMinedDisplay').textContent=totalMined.toLocaleString();
+  document.getElementById('totalMinedDisplay').textContent=asWholeDisplay(totalMined);
   document.getElementById('totalClicksDisplay').textContent=totalClicks.toLocaleString();
   const cps=totalCps();
   const badge=document.getElementById('cpsBadge');

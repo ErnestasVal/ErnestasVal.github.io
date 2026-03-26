@@ -67,6 +67,7 @@
   .spin-strip{display:flex;gap:8px;align-items:center;height:100%;padding:0 12px;transform:translateX(0);will-change:transform;}
   .spin-item{width:68px;height:80px;flex:0 0 auto;border-radius:8px;border:1px solid var(--border);background:var(--surface2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.15rem;}
   .spin-item-icon{font-size:1.5rem;line-height:1;}
+  .spin-item-image{width:30px;height:30px;border-radius:6px;object-fit:cover;display:block;}
   .spin-item-name{font-size:0.52rem;max-width:58px;text-align:center;line-height:1.1;color:var(--muted);}
   .spin-area.landed .spin-window{animation:spinFlash 0.28s ease;}
   @keyframes spinFlash{0%{box-shadow:0 0 0 rgba(251,105,108,0);}50%{box-shadow:0 0 28px rgba(251,105,108,0.45);}100%{box-shadow:0 0 0 rgba(251,105,108,0);}}
@@ -83,6 +84,7 @@
   .inv-item:hover{transform:scale(1.05);}
   .inv-item.sellable{cursor:pointer;}
   .inv-item .item-emoji{font-size:1.3rem;display:block;}
+  .inv-item .item-image{width:34px;height:34px;border-radius:6px;object-fit:cover;display:block;margin:0 auto;}
   .inv-item .item-label{font-size:0.55rem;margin-top:0.25rem;line-height:1.2;color:var(--muted);}
   .inv-item .item-value{font-family:'Rajdhani',sans-serif;font-size:0.55rem;font-weight:700;color:var(--accent);margin-top:0.2rem;letter-spacing:0.06em;text-transform:uppercase;}
   .inv-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:0.5rem;color:var(--muted);font-size:0.8rem;text-align:center;grid-column:1/-1;}
@@ -117,6 +119,7 @@
   .click-zone-title{font-family:'Rajdhani',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--muted);align-self:flex-start;}
 
   .mine-btn{width:170px;height:170px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#1a2540,#0a0f1c);border:2px solid rgba(245,158,11,0.25);cursor:pointer;position:relative;transition:transform 0.08s ease,border-color 0.2s;display:flex;align-items:center;justify-content:center;font-size:4.2rem;user-select:none;box-shadow:0 0 50px rgba(245,158,11,0.06),inset 0 0 40px rgba(0,0,0,0.5);}
+  .mine-btn-image{width:118px;height:118px;object-fit:contain;pointer-events:none;filter:drop-shadow(0 6px 12px rgba(0,0,0,0.32));}
   .mine-btn:hover{border-color:rgba(245,158,11,0.55);box-shadow:0 0 60px rgba(245,158,11,0.15),inset 0 0 40px rgba(0,0,0,0.5);}
   .mine-btn.clicked{transform:scale(0.88);}
   .mine-btn-ring{position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(245,158,11,0.12);animation:ringPulse 2.5s ease-in-out infinite;}
@@ -184,7 +187,8 @@
   .reveal-overlay.active .reveal-card{transform:scale(1);}
   .reveal-glow{position:absolute;inset:-3px;border-radius:22px;opacity:0;transition:opacity 0.4s ease;pointer-events:none;}
   .reveal-overlay.active .reveal-glow{opacity:1;}
-  .reveal-icon{font-size:5rem;margin-bottom:1rem;display:block;animation:floatItem 3s ease-in-out infinite;}
+  .reveal-icon{font-size:5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;animation:floatItem 3s ease-in-out infinite;min-height:84px;}
+  .reveal-image{width:96px;height:96px;border-radius:14px;object-fit:cover;border:1px solid rgba(248,215,170,0.35);box-shadow:0 8px 24px rgba(0,0,0,0.28);}
   @keyframes floatItem{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
   .reveal-rarity{font-family:'Rajdhani',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:0.5rem;}
   .reveal-name{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;margin-bottom:0.5rem;line-height:1.3;}

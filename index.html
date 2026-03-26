@@ -3,14 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VAULT — Lootbox Simulator</title>
+<title>Anime Nights - Gacha Simulator</title>
+<link rel="icon" type="image/png" href="assets/img/animenights%20logo.png">
+<link rel="apple-touch-icon" href="assets/img/animenights%20logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
 
 <header>
-  <div class="logo">VAULT</div>
+  <div class="logo">ANIME NIGHTS</div>
   <div class="currency-display">
     <span class="currency-icon">◈</span>
     <span id="coins">0</span>
@@ -22,21 +24,21 @@
 </header>
 
 <div class="tabs">
-  <button class="tab active" id="tab-btn-mine" onclick="switchTab('mine',this)">⛏️ Coin Mine</button>
-  <button class="tab" id="tab-btn-vault" onclick="switchTab('vault',this)">🔒 Vault</button>
+  <button class="tab active" id="tab-btn-mine" onclick="switchTab('mine',this)">✨ Hype Studio</button>
+  <button class="tab" id="tab-btn-vault" onclick="switchTab('vault',this)">🎴 Gacha Shrine</button>
 </div>
 
 <main>
   <!-- VAULT -->
   <div class="tab-content" id="tab-vault">
-    <p class="section-title">Choose a vault</p>
+    <p class="section-title">Choose a banner</p>
     <div class="box-grid" id="boxGrid"></div>
     <div class="opening-area">
       <div>
         <div class="chest-stage">
-          <div class="chest-visual" id="chestVisual" onclick="openBox()">🔒</div>
-          <button class="open-btn" id="openBtn" onclick="openBox()">Open Vault</button>
-          <div class="open-btn-cost" id="btnCost">◈ 50 per open</div>
+          <div class="chest-visual" id="chestVisual" onclick="openBox()">🎴</div>
+          <button class="open-btn" id="openBtn" onclick="openBox()">Pull Banner</button>
+          <div class="open-btn-cost" id="btnCost">◈ 50 per pull</div>
           <div class="spin-area" id="spinArea">
             <div class="spin-window">
               <div class="spin-pointer"></div>
@@ -54,12 +56,12 @@
       </div>
       <div class="inventory-panel">
         <div class="inv-header">
-          <div class="inv-title">Inventory</div>
+          <div class="inv-title">Collection</div>
           <div class="inv-count" id="invCount">0 items</div>
         </div>
-        <div class="inv-count" style="margin-bottom:0.6rem;">Click an item to sell it</div>
+        <div class="inv-count" style="margin-bottom:0.6rem;">Click a card to sell it</div>
         <div class="inv-grid" id="invGrid">
-          <div class="inv-empty" id="emptyMsg"><span class="inv-empty-icon">📦</span><span>Open a vault to begin</span></div>
+          <div class="inv-empty" id="emptyMsg"><span class="inv-empty-icon">📦</span><span>Pull a banner to begin</span></div>
         </div>
       </div>
     </div>
@@ -69,27 +71,27 @@
   <div class="tab-content active" id="tab-mine">
     <div class="clicker-layout">
       <div class="click-zone">
-        <div class="click-zone-title">Coin Mine</div>
+        <div class="click-zone-title">Hype Studio</div>
         <div class="mine-btn" id="mineBtn" onclick="handleClick(event)">
           <div class="mine-btn-ring"></div>
           <div class="mine-btn-ring2"></div>
-          ⛏️
+          <img class="mine-btn-image" src="assets/img/animenights%20logo.png" alt="Anime Nights logo">
         </div>
         <div class="click-stats">
-          <div class="click-stat-row"><span class="click-stat-label">Per click</span><span class="click-stat-val" id="perClickDisplay">+1</span></div>
+          <div class="click-stat-row"><span class="click-stat-label">Per tap</span><span class="click-stat-val" id="perClickDisplay">+1</span></div>
           <div class="click-stat-row"><span class="click-stat-label">Per second</span><span class="click-stat-val" id="perSecDisplay">0</span></div>
-          <div class="click-stat-row"><span class="click-stat-label">Total mined</span><span class="click-stat-val" id="totalMinedDisplay">0</span></div>
-          <div class="click-stat-row"><span class="click-stat-label">Total clicks</span><span class="click-stat-val" id="totalClicksDisplay">0</span></div>
+          <div class="click-stat-row"><span class="click-stat-label">Total hype</span><span class="click-stat-val" id="totalMinedDisplay">0</span></div>
+          <div class="click-stat-row"><span class="click-stat-label">Total taps</span><span class="click-stat-val" id="totalClicksDisplay">0</span></div>
         </div>
       </div>
 
       <div class="upgrades-panel">
-        <div class="panel-header">Click upgrades</div>
+        <div class="panel-header">Training boosts</div>
         <div class="upgrades-list" id="upgradesList"></div>
       </div>
 
       <div class="generators-panel">
-        <div class="panel-header">Passive generators</div>
+        <div class="panel-header">Passive crew</div>
         <div class="gen-list" id="genList"></div>
       </div>
     </div>
@@ -99,12 +101,12 @@
 <div class="reveal-overlay" id="revealOverlay" onclick="overlayBgClick(event)">
   <div class="reveal-card" id="revealCard">
     <div class="reveal-glow" id="revealGlow"></div>
-    <span class="reveal-icon" id="revealIcon">⚔️</span>
+    <div class="reveal-icon" id="revealIcon">⚔️</div>
     <div class="reveal-rarity" id="revealRarity">Legendary</div>
     <div class="reveal-name" id="revealName">Dragon Blade</div>
     <div class="reveal-desc" id="revealDesc">An ancient weapon.</div>
     <div class="reveal-value" id="revealValue">◈ 450</div>
-    <button class="claim-btn" onclick="closeReveal()">Add to Inventory</button>
+    <button class="claim-btn" onclick="closeReveal()">Add to Collection</button>
   </div>
 </div>
 <div class="toast" id="toast"></div>
