@@ -227,6 +227,9 @@ function calculateDropValue(box,rarity){
 }
 
 function createRewardedItem(baseItem,rarity,box){
+  if(box?.isSecret){
+    return {...baseItem};
+  }
   return {...baseItem,value:calculateDropValue(box,rarity)};
 }
 

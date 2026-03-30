@@ -1,6 +1,6 @@
 // Static game data/configuration lives here so gameplay logic stays focused.
 const BOXES=[
-  {id:'starter',name:'Rookie Banner',icon:'🎟️',cost:500,tier:'500',tierColor:'#f8d7aa',color:'#f8d7aa',odds:{common:78,rare:18,epic:3,legendary:0.9,mythic:0.1}},
+  {id:'starter',name:'Rookie Banner',icon:'🎫',cost:500,tier:'500',tierColor:'#f8d7aa',color:'#f8d7aa',odds:{common:78,rare:18,epic:3,legendary:0.9,mythic:0.1}},
   {id:'copper',name:'Shonen Banner',icon:'🎴',cost:1000,tier:'1K',tierColor:'#f8d7aa',color:'#f8d7aa',odds:{common:70,rare:22,epic:6,legendary:1.8,mythic:0.2}},
   {id:'bronze',name:'Mecha Banner',icon:'🤖',cost:5000,tier:'5K',tierColor:'#f3b999',color:'#f3b999',odds:{common:58,rare:27,epic:10,legendary:4,mythic:1}},
   {id:'silver',name:'Isekai Banner',icon:'🚪',cost:10000,tier:'10K',tierColor:'#f3b999',color:'#f3b999',odds:{common:45,rare:30,epic:16,legendary:7,mythic:2}},
@@ -8,7 +8,7 @@ const BOXES=[
   {id:'obsidian',name:'Studio Banner',icon:'🎬',cost:100000,tier:'100K',tierColor:'#fb696c',color:'#fb696c',odds:{common:22,rare:28,epic:27,legendary:16,mythic:7}},
   {id:'astral',name:'Festival Banner',icon:'🎆',cost:500000,tier:'500K',tierColor:'#ff4f57',color:'#ff4f57',odds:{common:12,rare:24,epic:30,legendary:23,mythic:11}},
   {id:'cosmic',name:'Final Arc Banner',icon:'🌠',cost:1000000,tier:'1M',tierColor:'#ff4f57',color:'#ff4f57',odds:{common:5,rare:15,epic:30,legendary:32,mythic:18}},
-  {id:'secret',name:'Director Cut Banner',icon:'🎞️',cost:10000000,tier:'???',tierColor:'#fb696c',color:'#fb696c',odds:{common:0,rare:0,epic:0,legendary:0,mythic:100},isSecret:true}
+  {id:'secret',name:'The Final Banner',icon:'♾️',cost:500000000,tier:'???',tierColor:'#fb696c',color:'#fb696c',odds:{common:0,rare:0,epic:0,legendary:0,mythic:100},isSecret:true}
 ];
 
 // To use your own image instead of an emoji icon, add: image:'assets/img/your-file.webp'
@@ -47,7 +47,7 @@ const ITEMS={
     {name:'Origin Studio Seal',icon:'🔱',desc:'The mark that greenlights miracles.',value:2200000},
   ],
   secret:[
-    {name:'Author Room Key',icon:'🗝️',desc:'Opens the room where every timeline begins.',value:6767676767},
+    {name:'Anime Nights Two Day Ticket',icon:'🎟️',desc:'Send a screenshot to @animenights.info Instagram to claim! Only the first two people can claim!',value:6767676767},
   ]
 };
 
