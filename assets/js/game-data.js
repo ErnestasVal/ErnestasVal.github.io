@@ -47,7 +47,7 @@ const ITEMS={
     {name:'Origin Studio Seal',icon:'🔱',desc:'The mark that greenlights miracles.',value:2200000},
   ],
   secret:[
-    {name:'Anime Nights Two Day Ticket',icon:'🎟️',desc:'Send a screenshot to @animenights.info Instagram to claim! Only the first two people can claim!',value:6767676767},
+    {name:'Anime Nights Two Day Ticket (expired)',image:'assets/img/cat.gif',desc:'Someone faster than you has already claimed this ticket.',value:6767676767},
   ]
 };
 
